@@ -12,3 +12,17 @@ Machine Learning: scikit-learn
 Frontend: HTML, CSS
 Data: Dataset for training attack predictions
 
+
+my_cybersecurity_project/
+│
+├── app/                    # Main app directory
+│   ├── __init__.py         # Initialize your Flask app
+│   ├── routes.py           # Define the routes
+│   ├── models.py           # If needed, define any models (database or ML)
+│   ├── templates/          # HTML templates
+│   └── static/             # CSS, JS, images
+│
+├── notebooks/              # Folder for your Jupyter notebooks
+├── requirements.txt        # List of dependencies
+├── README.md               # Documentation
+└── app.py                  # Main entry point
