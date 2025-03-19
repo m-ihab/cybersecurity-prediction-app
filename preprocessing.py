@@ -107,13 +107,19 @@ def preprocess_samples(df):
     
     if not isinstance(df, pd.DataFrame):
         raise ValueError("Input must be a Pandas DataFrame.")
-    
-    print(f"🛠️ DEBUG: Original DataFrame Shape: {df.shape}")
+    if len(df.columns) < len(expected_columns):
+        print(f"Auto-assigning headers to match expected columns")
+        df.columns = expected_columns[:len(df.columns)]
+    print(f"DEBUG: Original DataFrame Shape: {df.shape}")
     print(df.head())
     df.columns = expected_columns[:len(df.columns)]
 
     missing_features = [col for col in expected_columns if col not in df.columns]
-
+    missing_cols = [col for col in expected_columns if col not in df.columns]
+    if missing_cols:
+        print(f"Warning: Missing expected columns: {missing_cols}")
+        for col in missing_cols:
+            df[col] = 0 
     if missing_features:
         print(f"⚠️ Warning: Missing features detected: {missing_features}")
         for col in missing_features:
@@ -164,9 +170,10 @@ def preprocess_samples(df):
     df['Dst_Port_Binned'] = pd.cut(df['Destination Port'], bins=[0, 1023, 49151, 65535], labels=['Well-Known', 'Registered', 'Dynamic'])
 
     df['Log_Packet_Length'] = np.log1p(df['Packet Length'])
-
-    df[['Src_Octet1', 'Src_Octet2', 'Src_Octet3', 'Src_Octet4']] = df['Source IP Address'].str.split('.', expand=True).astype(int)
-    df[['Dst_Octet1', 'Dst_Octet2', 'Dst_Octet3', 'Dst_Octet4']] = df['Destination IP Address'].str.split('.', expand=True).astype(int)
+    
+    if 'Source IP Address' in df.columns and 'Destination IP Address' in df.columns:
+        df[['Src_Octet1', 'Src_Octet2', 'Src_Octet3', 'Src_Octet4']] = df['Source IP Address'].str.split('.', expand=True).astype(int)
+        df[['Dst_Octet1', 'Dst_Octet2', 'Dst_Octet3', 'Dst_Octet4']] = df['Destination IP Address'].str.split('.', expand=True).astype(int)
 
     df['Src_Octet1*Dst_Octet1'] = df['Src_Octet1'] * df['Dst_Octet1']
     df['Src_Octet2*Dst_Octet2'] = df['Src_Octet2'] * df['Dst_Octet2']
@@ -203,22 +210,6 @@ def preprocess_samples(df):
     df = pd.get_dummies(df, columns=['Day_of_Week', 'Month', 'Time_of_Day'], drop_first=True)
 
     df = df.drop(columns = 'Timestamp')
-
-    df['Src_Port_Binned'] = pd.cut(df['Source Port'], bins=[0, 1023, 49151, 65535], labels=['Well-Known', 'Registered', 'Dynamic'])
-    df['Dst_Port_Binned'] = pd.cut(df['Destination Port'], bins=[0, 1023, 49151, 65535], labels=['Well-Known', 'Registered', 'Dynamic'])
-
-    df['Log_Packet_Length'] = np.log1p(df['Packet Length'])
-
-    df[['Src_Octet1', 'Src_Octet2', 'Src_Octet3', 'Src_Octet4']] = df['Source IP Address'].str.split('.', expand=True).astype(int)
-    df[['Dst_Octet1', 'Dst_Octet2', 'Dst_Octet3', 'Dst_Octet4']] = df['Destination IP Address'].str.split('.', expand=True).astype(int)
-
-    df['Src_Octet1*Dst_Octet1'] = df['Src_Octet1'] * df['Dst_Octet1']
-    df['Src_Octet2*Dst_Octet2'] = df['Src_Octet2'] * df['Dst_Octet2']
-    df['Src_Octet3*Dst_Octet3'] = df['Src_Octet3'] * df['Dst_Octet3']
-    df['Src_Octet4*Dst_Octet4'] = df['Src_Octet4'] * df['Dst_Octet4']
-
-    df = pd.get_dummies(df, columns=['Src_Port_Binned', 'Dst_Port_Binned'], drop_first=True)
-    df = df.drop(columns=['Source IP Address', 'Destination IP Address', 'Proxy Information'])
 
     attack_mapping = {'Malware': 0, 'Intrusion': 1, 'DDoS': 2}
     df['Attack Type'] = df['Attack Type'].map(attack_mapping)
