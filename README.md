@@ -13,16 +13,14 @@ Frontend: HTML, CSS
 Data: Dataset for training attack predictions
 
 
-my_cybersecurity_project/
-│
-├── app/                    # Main app directory
-│   ├── __init__.py         # Initialize your Flask app
-│   ├── routes.py           # Define the routes
-│   ├── models.py           # If needed, define any models (database or ML)
-│   ├── templates/          # HTML templates
-│   └── static/             # CSS, JS, images
-│
-├── notebooks/              # Folder for your Jupyter notebooks
-├── requirements.txt        # List of dependencies
-├── README.md               # Documentation
-└── app.py                  # Main entry point
+----------------------------------------------------------------
+Completed:
+-Data Engineering: Feature extraction with scaling, principal component analysis
+-Modelling: Hyperparameter tuning for Random Forest, XGBoost and Neural Network
+-Flask Webapp
+----------------------------------------------------------------
+Issues:
+-Preprocessing data samples on the web app for the model to predict (issues with structure keys and propably dataframe headers, look into preprocessing.py)
+----------------------------------------------------------------
+Startup: run app.py from the webapp directory and read terminal :)
+F
