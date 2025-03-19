@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import joblib
 import torch
+import torch.nn as nn
 from flask import Flask, request, render_template, send_file
 from preprocessing import preprocess_samples
 
@@ -12,6 +13,7 @@ MODEL_PATHS = {
     "XGBoost": "./data/best_xgb_model.pkl",
     "Neural Network": "./data/best_nn_model.pth"
 }
+
 
 expected_columns = [
     "Timestamp", "Source IP Address", "Destination IP Address", "Source Port",
@@ -35,13 +37,38 @@ def load_csv(file):
 
     return df
 
+class NeuralNetwork(nn.Module):
+    def __init__(self, input_size, num_classes):
+        super(NeuralNetwork, self).__init__()
+        self.fc1 = nn.Linear(input_size, 128)
+        self.relu = nn.ReLU()
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, num_classes)
+        self.softmax = nn.Softmax(dim=1)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        x = self.relu(x)
+        x = self.fc3(x)
+        return self.softmax(x)
+
 def load_model(model_name):
     if model_name == "Neural Network":
-        model = torch.load(MODEL_PATHS[model_name], map_location=torch.device('cpu'))
+        input_size = 20
+        num_classes = 3
+
+        model = NeuralNetwork(input_size, num_classes)
+        state_dict = torch.load(MODEL_PATHS[model_name], map_location=torch.device('cpu'))
+        model.load_state_dict(state_dict)
         model.eval()
+        return model
+    elif model_name in MODEL_PATHS:
+        return joblib.load(MODEL_PATHS[model_name])
+
     else:
-        model = joblib.load(MODEL_PATHS[model_name])
-    return model
+        raise ValueError(f"Model {model_name} not found")
 
 @app.route("/")
 def index():
