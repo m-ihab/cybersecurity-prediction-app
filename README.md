@@ -13,14 +13,13 @@ Frontend: HTML, CSS
 Data: Dataset for training attack predictions
 
 
-----------------------------------------------------------------
+
 Completed:
--Data Engineering: Feature extraction with scaling, principal component analysis
--Modelling: Hyperparameter tuning for Random Forest, XGBoost and Neural Network
--Flask Webapp
-----------------------------------------------------------------
+ -Data Engineering: Feature extraction with scaling, principal component analysis
+ -Modelling: Hyperparameter tuning for Random Forest, XGBoost and Neural Network
+ -Flask Webapp
+
 Issues:
--Preprocessing data samples on the web app for the model to predict (issues with structure keys and propably dataframe headers, look into preprocessing.py)
-----------------------------------------------------------------
-Startup: run app.py from the webapp directory and read terminal :)
-F
+ -Preprocessing data samples on the web app for the model to predict (issues with structure keys and propably dataframe headers, look into preprocessing.py)
+ 	Startup: run app.py from the webapp directory and read terminal :)
+ F
